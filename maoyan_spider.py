@@ -5,7 +5,9 @@ import requests
 from requests import RequestException
 
 
+# handle one page
 def get_page(url):
+    # avoid 403 forbidden, set headers
     headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) '
                              'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.'
                              '0.3538.77 Safari/537.36'}
@@ -18,7 +20,8 @@ def get_page(url):
     except RequestException:
         return None
 
-
+# parse html using regular expression
+# return an iter by yield
 def parse_html(html):
     pattern = re.compile('<dd>.*?"name".*?">(.*?)</a>.*?"star">(.*?)</p>.*?"releasetime">(.*?)</p>', re.S)
     data = re.findall(pattern, html)
@@ -41,7 +44,7 @@ def main(offset):
     for item in parse_html(html):
         save_to_file(item)
 
-
+# multiprocessing pool
 if __name__ == '__main__':
     pool = Pool()
     pool.map(main, [i*10 for i in range(10)])
